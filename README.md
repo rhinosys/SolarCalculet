@@ -81,3 +81,7 @@ Le script affiche des messages pour suivre l'avancement :
 ---
 
 📧 **Contact** : Si vous avez des questions ou suggestions, n’hésitez pas à ouvrir une issue ou à contacter l’auteur. 🚀
+
+
+https://eu5.fusionsolar.huawei.com/unisso/login.action?service=%2Funisess%2Fv1%2Fauth%3Fservice%3D%252Fnetecowebext%252Fhome%252Findex.html#/LOGIN
+
