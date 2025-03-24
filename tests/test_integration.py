@@ -1,6 +1,6 @@
 """
 Tests d'intégration du processus complet
-"""
+"""  # pylint: disable=redefined-outer-name
 
 import pytest
 import pandas as pd

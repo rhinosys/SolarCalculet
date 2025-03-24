@@ -1,11 +1,12 @@
 """
 Tests pour le module d'export Excel
-"""
+"""  # pylint: disable=redefined-outer-name
 
-import pytest
-import pandas as pd
 import os
-from datetime import datetime
+
+import pandas as pd
+import pytest
+
 from solarcalculet.excel_exporter import ExcelExporter
 
 

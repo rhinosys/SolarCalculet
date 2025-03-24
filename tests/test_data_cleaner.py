@@ -1,6 +1,6 @@
 """
 Tests pour le module de nettoyage des données
-"""
+"""  # pylint: disable=redefined-outer-name
 
 from datetime import datetime
 import pytest

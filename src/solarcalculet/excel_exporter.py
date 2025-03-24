@@ -117,7 +117,9 @@ class ExcelExporter:
             if "kW" not in df.iloc[:, 1].astype(str).values:
                 errors.append("Unit should be kW")
 
-        except Exception as e:
-            errors.append(f"Error validating file: {str(e)}")
+        except (pd.errors.EmptyDataError, pd.errors.ParserError) as e:
+            errors.append(f"Error reading Excel file: {str(e)}")
+        except (KeyError, IndexError) as e:
+            errors.append(f"Error accessing Excel data: {str(e)}")
 
         return errors
