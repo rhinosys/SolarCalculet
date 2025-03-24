@@ -1,4 +1,28 @@
-# README - Importation et Traitement des Données de Consommation Électrique
+# SolarCalculet - Traitement des Données de Consommation Électrique
+
+Outil de nettoyage et d'analyse des données ENEDIS pour l'étude de la consommation d'énergie.
+
+## Documentation
+
+La documentation complète est disponible sur [GitHub Pages](https://votre-compte.github.io/SolarCalculet/).
+
+## Installation Rapide
+
+```bash
+git clone https://github.com/votre-compte/SolarCalculet.git
+cd SolarCalculet
+python -m venv venv
+source venv/bin/activate  # Sur Unix/macOS
+pip install -r requirements.txt
+```
+
+## Utilisation
+
+```bash
+python src/main.py
+```
+
+Pour plus de détails, consultez la [documentation complète](https://votre-compte.github.io/SolarCalculet/).
 
 ## 📌 Description
 Le script `import_enedis.py` permet d'importer, traiter et agréger des données de consommation électrique issues de fichiers Excel fournis par Enedis. Comme chaque fichier ne contient que 7 jours de données, ce script fusionne l’ensemble des fichiers disponibles et génère un fichier unique avec une consommation horaire agrégée.

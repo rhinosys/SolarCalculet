@@ -1,0 +1,5 @@
+theme: jekyll-theme-cayman
+title: SolarCalculet
+description: Outil de nettoyage des données ENEDIS
+show_downloads: true
+google_analytics:

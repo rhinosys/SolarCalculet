@@ -1,0 +1,3 @@
+On doit faire un outil de notoyyage du fichier ./Data/ENEDIS_R63_P_CdC_M07VD2PL_00001_20250313093019.csv. Ce fichier est extraction du distrubuteur energetique de ma maison.  Les donnée sont presenter avec chaque ligne une heure de consomation. les donnée commence en 2023 et finisse en 2024. Mon objectif est verifier chaque jour de 2023 et 2024 si les donnée sont complete. Si il manque des donnée sur une heure on prend un les donnée de l'heure de l'année 2024 ou 2023 ou meêm 2025. Il faut que trouve la meilleur facon de traiter peut etre passer par mongodb ou une autre base. le resulta finame est d'avoir un fichier 2023.csv et fichier 2024.csv. 
+
+Coder en python.
