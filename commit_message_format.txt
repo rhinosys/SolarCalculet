@@ -1,0 +1,10 @@
+style: format code with black
+
+🎨 Format code to meet style guidelines
+- Apply black formatting to all Python files
+- Ensure consistent code style across the project
+- Fix CI pipeline formatting check
+
+Files affected:
+- src/solarcalculet/*.py
+- tests/*.py
