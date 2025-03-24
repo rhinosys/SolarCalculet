@@ -81,13 +81,26 @@ jobs:
 
     - name: Validate file source
       run: |
+        echo "Debug: Listing repository contents"
+        ls -la $GITHUB_WORKSPACE
+        echo "\nDebug: Checking Data directory"
+        ls -la $GITHUB_WORKSPACE/Data || echo "Data directory not found"
+        
         if [[ "$SOURCE_TYPE" == "http" && ! "$FILE_SOURCE" =~ ^https?:// ]]; then
           echo "::error::L'URL doit commencer par http:// ou https://"
           exit 1
         fi
-        if [[ "$SOURCE_TYPE" == "repo" && ! -f "$GITHUB_WORKSPACE/$FILE_SOURCE" ]]; then
-          echo "::error::Le fichier n'existe pas dans le dépôt: $GITHUB_WORKSPACE/$FILE_SOURCE"
-          exit 1
+        
+        if [[ "$SOURCE_TYPE" == "repo" ]]; then
+          if [[ ! -d "$GITHUB_WORKSPACE/Data" ]]; then
+            echo "::error::Le dossier Data n'existe pas dans le dépôt"
+            exit 1
+          fi
+          if [[ ! -f "$GITHUB_WORKSPACE/$FILE_SOURCE" ]]; then
+            echo "::error::Le fichier n'existe pas: $FILE_SOURCE"
+            echo "::error::Chemin complet: $GITHUB_WORKSPACE/$FILE_SOURCE"
+            exit 1
+          fi
         fi
 
     - name: Download file if HTTP
