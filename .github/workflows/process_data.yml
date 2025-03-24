@@ -5,6 +5,11 @@ permissions:
   actions: write
 
 on:
+  push:
+    paths:
+      - 'Data/**'
+  schedule:
+    - cron: '0 0 * * *'  # Une fois par jour à minuit
   workflow_dispatch:
     inputs:
       file_source:
