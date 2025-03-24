@@ -13,9 +13,19 @@ from solarcalculet.excel_exporter import ExcelExporter
 def input_csv(tmp_path):
     """Crée un fichier CSV de test avec des données sur 2023-2024"""
     headers = [
-        "Identifiant PRM", "Date de début", "Date de fin", "Grandeur physique",
-        "Grandeur métier", "Etape métier", "Unité", "Horodate", "Valeur", "Nature",
-        "Pas", "Indice de vraisemblance", "Etat complémentaire"
+        "Identifiant PRM",
+        "Date de début",
+        "Date de fin",
+        "Grandeur physique",
+        "Grandeur métier",
+        "Etape métier",
+        "Unité",
+        "Horodate",
+        "Valeur",
+        "Nature",
+        "Pas",
+        "Indice de vraisemblance",
+        "Etat complémentaire",
     ]
     data_rows = [
         "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2023-01-01 00:00:00;500;B;PT30M;0;0",
@@ -23,7 +33,7 @@ def input_csv(tmp_path):
         "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2023-01-01 03:00:00;700;B;PT30M;0;0",
         "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 00:00:00;550;B;PT30M;0;0",
         "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 01:00:00;650;B;PT30M;0;0",
-        "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 02:00:00;750;B;PT30M;0;0"
+        "19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 02:00:00;750;B;PT30M;0;0",
     ]
     data = ";".join(headers) + "\n" + "\n".join(data_rows)
 
