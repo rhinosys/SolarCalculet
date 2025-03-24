@@ -48,32 +48,39 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Set input variables
+      run: |
+        echo "SOURCE_TYPE=${{ github.event.inputs.source_type }}" >> $GITHUB_ENV
+        echo "FILE_SOURCE=${{ github.event.inputs.file_source }}" >> $GITHUB_ENV
+        echo "OUTPUT_PREFIX=${{ github.event.inputs.output_prefix }}" >> $GITHUB_ENV
+        echo "VALIDATE_ONLY=${{ github.event.inputs.validate_only }}" >> $GITHUB_ENV
+
     - name: Validate file source
       run: |
-        if [[ "${{ inputs.source_type }}" == "http" && ! "${{ inputs.file_source }}" =~ ^https?:// ]]; then
+        if [[ "$SOURCE_TYPE" == "http" && ! "$FILE_SOURCE" =~ ^https?:// ]]; then
           echo "::error::L'URL doit commencer par http:// ou https://"
           exit 1
         fi
-        if [[ "${{ inputs.source_type }}" == "repo" && ! -f "${{ inputs.file_source }}" ]]; then
+        if [[ "$SOURCE_TYPE" == "repo" && ! -f "$FILE_SOURCE" ]]; then
           echo "::error::Le fichier n'existe pas dans le dépôt"
           exit 1
         fi
 
     - name: Download file if HTTP
-      if: inputs.source_type == 'http'
+      if: env.SOURCE_TYPE == 'http'
       run: |
         mkdir -p data
-        curl -L "${{ github.event.inputs.file_source }}" -o data/input.csv
+        curl -L "$FILE_SOURCE" -o data/input.csv
         if ! file data/input.csv | grep -q "CSV text"; then
           echo "::error::Le fichier téléchargé n'est pas un CSV valide"
           exit 1
         fi
 
     - name: Copy file if from repo
-      if: inputs.source_type == 'repo'
+      if: env.SOURCE_TYPE == 'repo'
       run: |
         mkdir -p data
-        cp "${{ github.event.inputs.file_source }}" data/input.csv
+        cp "$FILE_SOURCE" data/input.csv
 
     - name: Validate CSV format
       run: |
@@ -92,21 +99,25 @@ except Exception as e:
         "
 
     - name: Process data
-      if: inputs.validate_only != 'true'
+      if: env.VALIDATE_ONLY != 'true'
       run: |
-        python -m solarcalculet data/input.csv ${{ inputs.output_prefix != '' && format('--output-prefix {0}', inputs.output_prefix) || '' }}
+        ARGS=""
+        if [[ "$OUTPUT_PREFIX" != "" ]]; then
+          ARGS="--output-prefix $OUTPUT_PREFIX"
+        fi
+        python -m solarcalculet data/input.csv $ARGS
 
     - name: Upload XLSX files
-      if: inputs.validate_only != 'true'
+      if: env.VALIDATE_ONLY != 'true'
       uses: actions/upload-artifact@v4
       with:
         name: processed-data
         path: |
-          ${{ inputs.output_prefix }}*.xlsx
+          ${{ env.OUTPUT_PREFIX }}*.xlsx
         if-no-files-found: error
 
     - name: Generate validation report
-      if: inputs.validate_only == 'true'
+      if: env.VALIDATE_ONLY == 'true'
       run: |
         echo "## Rapport de validation" > validation_report.md
         echo "" >> validation_report.md
@@ -118,11 +129,11 @@ import pandas as pd
 df = pd.read_csv('data/input.csv', sep=';')
 print(f'- Nombre de lignes : {len(df)}', file=open('validation_report.md', 'a'))
 print(f'- Colonnes : {list(df.columns)}', file=open('validation_report.md', 'a'))
-print(f'- Période : {df['Horodate'].min()} à {df['Horodate'].max()}', file=open('validation_report.md', 'a'))
+print(f'- Période : {df[\"Horodate\"].min()} à {df[\"Horodate\"].max()}', file=open('validation_report.md', 'a'))
         "
 
     - name: Upload validation report
-      if: inputs.validate_only == 'true'
+      if: env.VALIDATE_ONLY == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: validation-report
