@@ -1,0 +1,53 @@
+site_name: SolarCalculet
+site_description: Documentation de l'outil de traitement des données ENEDIS
+repo_url: https://github.com/rhinosys/SolarCalculet
+repo_name: rhinosys/SolarCalculet
+
+theme:
+  name: material
+  language: fr
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Accueil: index.md
+  - Guide:
+    - Format des Fichiers: file-format.md
+    - Tests: testing.md
+    - Qualité du Code: code-quality.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]

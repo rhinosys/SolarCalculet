@@ -2,18 +2,23 @@
 Tests pour le module de lecture des données ENEDIS
 """
 
+from pathlib import Path
 import pytest
 import pandas as pd
-from pathlib import Path
 from solarcalculet.data_reader import DataReader
 
 
 @pytest.fixture
 def sample_data_path(tmp_path):
     """Crée un fichier CSV de test"""
-    data = """Identifiant PRM;Date de début;Date de fin;Grandeur physique;Grandeur métier;Etape métier;Unité;Horodate;Valeur;Nature;Pas;Indice de vraisemblance;Etat complémentaire
-19125759625988;2023-03-13 00:00:00;2025-03-13 00:00:00;PA;CONS;BRUT;W;2023-03-13 00:30:00;692;B;PT30M;0;0
-19125759625988;2023-03-13 00:00:00;2025-03-13 00:00:00;PA;CONS;BRUT;W;2023-03-13 01:00:00;1284;B;PT30M;0;0"""
+    headers = [
+        "Identifiant PRM", "Date de début", "Date de fin", "Grandeur physique",
+        "Grandeur métier", "Etape métier", "Unité", "Horodate", "Valeur", "Nature",
+        "Pas", "Indice de vraisemblance", "Etat complémentaire"
+    ]
+    data = ";".join(headers) + "\n"
+    data += "19125759625988;2023-03-13 00:00:00;2025-03-13 00:00:00;PA;CONS;BRUT;W;2023-03-13 00:30:00;692;B;PT30M;0;0\n"
+    data += "19125759625988;2023-03-13 00:00:00;2025-03-13 00:00:00;PA;CONS;BRUT;W;2023-03-13 01:00:00;1284;B;PT30M;0;0"
     csv_file = tmp_path / "test_enedis.csv"
     csv_file.write_text(data)
     return csv_file

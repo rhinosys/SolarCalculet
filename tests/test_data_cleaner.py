@@ -2,9 +2,9 @@
 Tests pour le module de nettoyage des données
 """
 
+from datetime import datetime
 import pytest
 import pandas as pd
-from datetime import datetime
 from solarcalculet.data_cleaner import DataCleaner
 
 

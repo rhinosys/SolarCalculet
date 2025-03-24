@@ -2,7 +2,7 @@
 Tests de configuration initiale
 """
 
-import pytest
+import pandas as pd
 from solarcalculet import __version__
 
 
@@ -13,8 +13,4 @@ def test_version():
 
 def test_dependencies():
     """Vérifie que les dépendances principales sont disponibles"""
-    import pandas as pd
-    import openpyxl
-    import pymongo
-
     assert pd.__version__ >= "2.0.0"

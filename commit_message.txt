@@ -1,21 +1,21 @@
-feat(ci/docs): add GitHub Actions and documentation
+docs: update documentation with code quality metrics
 
-✨ Add GitHub Actions workflows for CI/CD
-- Configure tests workflow with Python 3.11-3.13
-- Add code quality checks (black, pylint)
-- Set up test coverage reporting with Codecov
-- Configure documentation deployment workflow
+📚 Add code quality documentation and improve README
+- Add pylint score (9.43/10) badge and metrics
+- Create detailed code quality documentation page
+- Update README with clearer structure and badges
+- Configure mkdocs with material theme
 
-📚 Add GitHub Pages documentation
-- Create comprehensive documentation structure
-- Add installation and usage guides
-- Document file formats and specifications
-- Add testing documentation and examples
+📈 Quality metrics
+- Document current pylint score and improvements
+- Add code quality standards and guidelines
+- Document local verification procedures
+- Update contribution guidelines
 
 🔧 Technical improvements
-- Add pylint configuration
-- Configure Jekyll for GitHub Pages
-- Set up project structure documentation
+- Update mkdocs configuration
+- Add material theme customization
+- Improve documentation structure
 
 Breaking changes: none
 Tested: Yes

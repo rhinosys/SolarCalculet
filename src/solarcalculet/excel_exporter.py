@@ -3,19 +3,21 @@ Module d'export des données au format Excel
 """
 
 import pandas as pd
-from pathlib import Path
 
 
 class ExcelExporter:
     """Classe pour exporter les données au format Excel spécifié"""
 
-    EXCEL_TEMPLATE = """Note:
- 1. Do not delete this note or change the format, date & time column, or time interval in the template. Enter the load power for each time segment in each date. Do not leave any cell empty.
- 2. The template contains all data from 0:00 on January 1 to the end of the year (365 days).
- 3. Enter the unit of the load power (kW or W) in cell B3.
- 4. Column A refers to "Month/Day Hour:Minute".
- 5. Enter the load power at 0:00 on January 1 in cell B5, the load power at 1:00 on January 1 in cell B6, and so on.
- 6. Each value must be greater than or equal to 0. If you set the unit to kW, you can enter a maximum of six decimal places for each value. If you set the unit to W, you can enter a maximum of two decimal places for each value."""
+    EXCEL_TEMPLATE = """
+    Note:
+    1. Do not delete this note or change the format, date & time column, or time interval in the template.
+       Enter the load power for each time segment in each date. Do not leave any cell empty.
+    2. The template contains all data from 0:00 on January 1 to the end of the year (365 days).
+    3. Enter the unit of the load power (kW or W) in cell B3.
+    4. Column A refers to "Month/Day Hour:Minute".
+    5. Enter the load power at 0:00 on January 1 in cell B5, at 1:00 in cell B6, and so on.
+    6. Each value must be greater than or equal to 0 (max 6 decimals for kW, 2 for W).
+    """
 
     def __init__(self, data: pd.DataFrame):
         """

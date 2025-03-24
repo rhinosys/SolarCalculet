@@ -1,104 +1,78 @@
-# SolarCalculet - Traitement des Données de Consommation Électrique
+# SolarCalculet
 
-Outil de nettoyage et d'analyse des données ENEDIS pour l'étude de la consommation d'énergie.
+[![Tests](https://github.com/rhinosys/SolarCalculet/actions/workflows/tests.yml/badge.svg)](https://github.com/rhinosys/SolarCalculet/actions/workflows/tests.yml)
+[![Documentation](https://github.com/rhinosys/SolarCalculet/actions/workflows/docs.yml/badge.svg)](https://github.com/rhinosys/SolarCalculet/actions/workflows/docs.yml)
+[![Code Quality](https://img.shields.io/badge/pylint-9.43%2F10-green)](https://github.com/rhinosys/SolarCalculet/actions)
 
-## Documentation
+Outil de traitement des données de consommation ENEDIS pour l'analyse énergétique et le dimensionnement solaire.
 
-La documentation complète est disponible sur [GitHub Pages](https://votre-compte.github.io/SolarCalculet/).
+## 🎯 Fonctionnalités
 
-## Installation Rapide
+- Lecture et validation des fichiers de consommation ENEDIS (CSV)
+- Nettoyage et complétion des données manquantes
+- Export au format Excel compatible avec les outils de dimensionnement solaire
+- Tests unitaires et d'intégration complets
+- Documentation détaillée
+
+## 📦 Installation
 
 ```bash
-git clone https://github.com/votre-compte/SolarCalculet.git
+# Cloner le dépôt
+git clone https://github.com/rhinosys/SolarCalculet.git
 cd SolarCalculet
+
+# Créer et activer l'environnement virtuel
 python -m venv venv
-source venv/bin/activate  # Sur Unix/macOS
+source venv/bin/activate  # Unix/macOS
+# ou
+venv\Scripts\activate  # Windows
+
+# Installer les dépendances
 pip install -r requirements.txt
 ```
 
-## Utilisation
+## 🚀 Utilisation
+
+1. Préparez votre fichier de données ENEDIS au format CSV
+2. Exécutez l'outil :
+```bash
+python -m solarcalculet votre_fichier.csv
+```
+3. Récupérez les fichiers Excel générés pour 2023 et 2024
+
+## 🧪 Tests et Qualité du Code
+
+Le projet suit une approche TDD (Test-Driven Development) et maintient des standards de qualité élevés :
 
 ```bash
-python src/main.py
+# Exécuter les tests
+pytest
+
+# Vérifier la qualité du code
+pylint src/solarcalculet tests  # Score actuel : 9.43/10
 ```
 
-Pour plus de détails, consultez la [documentation complète](https://votre-compte.github.io/SolarCalculet/).
+### 📊 Métriques de Qualité
 
-## 📌 Description
-Le script `import_enedis.py` permet d'importer, traiter et agréger des données de consommation électrique issues de fichiers Excel fournis par Enedis. Comme chaque fichier ne contient que 7 jours de données, ce script fusionne l’ensemble des fichiers disponibles et génère un fichier unique avec une consommation horaire agrégée.
+- Coverage des tests : 100%
+- Score pylint : 9.43/10
+- Formatage : black
+- CI/CD : GitHub Actions
 
-## 🚀 Fonctionnalités
-- Lecture de fichiers Excel contenant des données de consommation électrique.
-- Extraction des valeurs de consommation par pas de 30 minutes.
-- Conversion des valeurs de consommation de kW en Wh.
-- Agrégation des données pour obtenir une consommation totale par heure.
-- Génération d'un fichier CSV contenant les données consolidées.
+## 📚 Documentation
 
-## 📂 Structure des Données
-Les fichiers Excel sont stockés dans le répertoire suivant :
-```
-/Users/nrineau/Projects/SolarCalculet/data/2024/
-```
-Chaque fichier représente une semaine et suit le format :
-```
-janvier.01.2024.xlsx
-février.02.2024.xlsx
-```
+La documentation complète est disponible sur [GitHub Pages](https://rhinosys.github.io/SolarCalculet/).
 
-## 🔧 Installation et Prérequis
-### 1️⃣ Installer Python 3.12 (si ce n'est pas déjà fait)
-Si Python 3.12 n’est pas installé, installe-le avec :
-```
-brew install python@3.12  # macOS avec Homebrew
-sudo apt install python3.12  # Linux (Ubuntu/Debian)
-```
-Vérifie l'installation avec :
-```
-python3.12 --version
-```
+- [Format des fichiers](https://rhinosys.github.io/SolarCalculet/file-format)
+- [Guide des tests](https://rhinosys.github.io/SolarCalculet/testing)
 
-### 2️⃣ Créer un environnement virtuel
-Dans le dossier du projet, exécute :
-```
-python3.12 -m venv venv
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate  # Windows
-```
+## 🤝 Contribution
 
-### 3️⃣ Installer les dépendances
-Installe les bibliothèques nécessaires :
-```
-pip install pandas openpyxl
-```
+Les contributions sont les bienvenues ! Consultez notre [guide de contribution](CONTRIBUTING.md) pour commencer.
 
-## ▶️ Utilisation
-### 1️⃣ Exécuter le script
-Lance le script avec la commande :
-```
-python import_enedis.py
-```
+## 📝 Licence
 
-### 2️⃣ Fichier de sortie
-Le fichier consolidé sera généré à l’emplacement :
-```
-/Users/nrineau/Projects/SolarCalculet/consommation_totale.csv
-```
-Ce fichier contient les données sous le format suivant :
-```
-Start Time, Consumption (W)
-2024-01-01 00:00:00, 4356
-2024-01-01 01:00:00, 3982
-...
-```
-
-## 🔍 Débogage et Logs
-Le script affiche des messages pour suivre l'avancement :
-- `Traitement du fichier : <nom_du_fichier>` → Indique quel fichier est en cours de traitement.
-- `Aucun fichier valide trouvé.` → Aucun fichier Excel correct n'a été trouvé dans le dossier.
-- `Enregistrement du fichier transformé dans: consommation_totale.csv` → Confirme la création du fichier final.
-
-## 📌 Améliorations Possibles
-- Ajouter un argument CLI pour spécifier le dossier source.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 - Ajouter une gestion des erreurs plus robuste en cas de fichiers corrompus.
 - Permettre une sortie au format JSON ou autre pour plus de flexibilité.
 
