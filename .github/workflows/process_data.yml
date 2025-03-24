@@ -1,4 +1,4 @@
-name: process-enedis-data
+name: process_data
 
 permissions:
   contents: read
@@ -32,8 +32,31 @@ on:
         default: false
 
 jobs:
-  process:
+  validate-inputs:
     runs-on: ubuntu-latest
+    outputs:
+      file_source: ${{ steps.check-inputs.outputs.file_source }}
+      source_type: ${{ steps.check-inputs.outputs.source_type }}
+      output_prefix: ${{ steps.check-inputs.outputs.output_prefix }}
+    steps:
+      - id: check-inputs
+        run: |
+          if [[ "${{ github.event.inputs.source_type }}" == "http" && ! "${{ github.event.inputs.file_source }}" =~ ^https?:// ]]; then
+            echo "::error::L'URL doit commencer par http:// ou https://"
+            exit 1
+          fi
+          echo "file_source=${{ github.event.inputs.file_source }}" >> $GITHUB_OUTPUT
+          echo "source_type=${{ github.event.inputs.source_type }}" >> $GITHUB_OUTPUT
+          echo "output_prefix=${{ github.event.inputs.output_prefix }}" >> $GITHUB_OUTPUT
+
+  process:
+    needs: validate-inputs
+    runs-on: ubuntu-latest
+    env:
+      FILE_SOURCE: ${{ needs.validate-inputs.outputs.file_source }}
+      SOURCE_TYPE: ${{ needs.validate-inputs.outputs.source_type }}
+      OUTPUT_PREFIX: ${{ needs.validate-inputs.outputs.output_prefix }}
+      VALIDATE_ONLY: ${{ github.event.inputs.validate_only }}
 
     steps:
     - uses: actions/checkout@v4
@@ -84,32 +107,40 @@ jobs:
         cp "$FILE_SOURCE" data/input.csv
 
     - name: Validate CSV format
+      id: validate-csv
       run: |
-        python -c "
-import pandas as pd
-try:
-    df = pd.read_csv('data/input.csv', sep=';')
-    required_cols = ['Horodate', 'Valeur']
-    missing_cols = [col for col in required_cols if col not in df.columns]
-    if missing_cols:
-        raise ValueError(f'Colonnes manquantes: {missing_cols}')
-    print('✅ Format CSV valide')
-except Exception as e:
-    print(f'::error::Erreur de validation: {e}')
-    exit(1)
-        "
+        python - <<EOF
+        import pandas as pd
+        import sys
+        try:
+            df = pd.read_csv('data/input.csv', sep=';')
+            required_cols = ['Horodate', 'Valeur']
+            missing_cols = [col for col in required_cols if col not in df.columns]
+            if missing_cols:
+                raise ValueError(f'Colonnes manquantes: {missing_cols}')
+            print('✅ Format CSV valide')
+            with open('csv_info.txt', 'w') as f:
+                f.write(f"ROWS={len(df)}\n")
+                f.write(f"COLS={','.join(df.columns)}\n")
+                f.write(f"START={df['Horodate'].min()}\n")
+                f.write(f"END={df['Horodate'].max()}\n")
+        except Exception as e:
+            print(f'::error::Erreur de validation: {e}', file=sys.stderr)
+            sys.exit(1)
+        EOF
 
     - name: Process data
-      if: env.VALIDATE_ONLY != 'true'
+      id: process-data
+      if: success() && github.event.inputs.validate_only != 'true'
       run: |
         ARGS=""
-        if [[ "$OUTPUT_PREFIX" != "" ]]; then
+        if [[ -n "$OUTPUT_PREFIX" ]]; then
           ARGS="--output-prefix $OUTPUT_PREFIX"
         fi
         python -m solarcalculet data/input.csv $ARGS
 
     - name: Upload XLSX files
-      if: env.VALIDATE_ONLY != 'true'
+      if: success() && github.event.inputs.validate_only != 'true'
       uses: actions/upload-artifact@v4
       with:
         name: processed-data
@@ -134,7 +165,7 @@ print(f'- Période : {df[\"Horodate\"].min()} à {df[\"Horodate\"].max()}', file
         "
 
     - name: Upload validation report
-      if: env.VALIDATE_ONLY == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: validation-report
