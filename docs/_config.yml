@@ -1,5 +1,6 @@
-theme: jekyll-theme-cayman
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+- jekyll-remote-theme
 title: SolarCalculet
-description: Outil de nettoyage des données ENEDIS
+description: Outil de nettoyage et traitement des données de consommation ENEDIS
 show_downloads: true
-google_analytics:

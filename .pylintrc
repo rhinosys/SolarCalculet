@@ -1,0 +1,30 @@
+[MASTER]
+disable=
+    C0111, # missing-docstring
+    C0103, # invalid-name
+    R0903, # too-few-public-methods
+    R0913, # too-many-arguments
+    W0511, # fixme
+
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=
+    fixme,
+    missing-docstring,
+    invalid-name,
+    too-few-public-methods
+
+[REPORTS]
+output-format=colorized
+reports=no
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,df
+
+[SIMILARITIES]
+min-similarity-lines=7
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes

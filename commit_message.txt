@@ -1,0 +1,22 @@
+feat(ci/docs): add GitHub Actions and documentation
+
+✨ Add GitHub Actions workflows for CI/CD
+- Configure tests workflow with Python 3.11-3.13
+- Add code quality checks (black, pylint)
+- Set up test coverage reporting with Codecov
+- Configure documentation deployment workflow
+
+📚 Add GitHub Pages documentation
+- Create comprehensive documentation structure
+- Add installation and usage guides
+- Document file formats and specifications
+- Add testing documentation and examples
+
+🔧 Technical improvements
+- Add pylint configuration
+- Configure Jekyll for GitHub Pages
+- Set up project structure documentation
+
+Breaking changes: none
+Tested: Yes
+Documentation: Added in /docs

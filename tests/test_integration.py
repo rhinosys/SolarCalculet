@@ -1,100 +1,85 @@
 """
-Tests d'intégration pour le processus complet de nettoyage des données.
+Tests d'intégration du processus complet
 """
-import os
-import pandas as pd
 import pytest
-from src.data_cleaner import DataCleaner
+import pandas as pd
+import os
+from pathlib import Path
+from solarcalculet.data_reader import DataReader
+from solarcalculet.data_cleaner import DataCleaner
+from solarcalculet.excel_exporter import ExcelExporter
 
-def test_end_to_end_process(test_data_dir, tmp_path):
-    """Test le processus complet de bout en bout."""
-    # 1. Initialisation
-    cleaner = DataCleaner()
-    assert cleaner.connect_to_mongodb() is True
+@pytest.fixture
+def input_csv(tmp_path):
+    """Crée un fichier CSV de test avec des données sur 2023-2024"""
+    data = """Identifiant PRM;Date de début;Date de fin;Grandeur physique;Grandeur métier;Etape métier;Unité;Horodate;Valeur;Nature;Pas;Indice de vraisemblance;Etat complémentaire
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2023-01-01 00:00:00;500;B;PT30M;0;0
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2023-01-01 01:00:00;600;B;PT30M;0;0
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2023-01-01 03:00:00;700;B;PT30M;0;0
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 00:00:00;550;B;PT30M;0;0
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 01:00:00;650;B;PT30M;0;0
+19125759625988;2023-01-01 00:00:00;2024-12-31 23:59:59;PA;CONS;BRUT;W;2024-01-01 02:00:00;750;B;PT30M;0;0"""
     
-    # 2. Lecture des données
-    input_file = os.path.join(test_data_dir, 'integration_data.csv')
-    df = cleaner.read_csv_file(input_file)
-    assert isinstance(df, pd.DataFrame)
-    assert len(df) > 0
-    
-    # 3. Validation initiale
-    validation = cleaner.validate_data_format(df)
-    assert 'invalid_rows' in validation
-    assert 'missing_values' in validation
-    assert len(validation['invalid_rows']) > 0 or len(validation['missing_values']) > 0
-    
-    # 4. Complétion des données
-    df_completed = cleaner.complete_missing_data(df)
-    
-    # Supprime les lignes invalides avant la validation finale
-    df_completed = df_completed[df_completed['Consommation (Wh)'].apply(
-        lambda x: str(x).replace('.', '').isdigit() if pd.notna(x) else False
-    )]
-    
-    validation_completed = cleaner.validate_completed_data(df_completed)
-    assert validation_completed['is_valid'] is True
-    assert len(validation_completed['errors']) == 0
-    
-    # 5. Stockage MongoDB
-    assert cleaner.store_data_in_mongodb(df_completed) is True
-    
-    # 6. Organisation par année
-    data_by_year = cleaner.organize_data_by_year(df_completed)
-    assert 2023 in data_by_year
-    assert 2024 in data_by_year
-    
-    # 7. Génération des fichiers
-    output_dir = str(tmp_path)
-    assert cleaner.generate_output_files(df_completed, output_dir) is True
-    
-    # 8. Vérification des fichiers générés
-    for year in [2023, 2024]:
-        output_file = os.path.join(output_dir, f'{year}.csv')
-        assert os.path.exists(output_file)
-        df_output = pd.read_csv(output_file, sep=';', parse_dates=['Horodate'])
-        assert len(df_output) > 0
-        assert all(df_output['Consommation (Wh)'].notna())
-        assert all(df_output['Horodate'].dt.year == year)
+    csv_file = tmp_path / "ENEDIS.input.csv"
+    csv_file.write_text(data)
+    return csv_file
 
-def test_data_consistency(test_data_dir, tmp_path):
-    """Test la cohérence des données entre les fichiers d'entrée et de sortie."""
-    cleaner = DataCleaner()
-    cleaner.connect_to_mongodb()
+def test_full_process(input_csv, tmp_path):
+    """
+    Teste le processus complet :
+    1. Lecture du fichier CSV
+    2. Nettoyage des données
+    3. Export vers Excel
+    """
+    # 1. Lecture des données
+    reader = DataReader(input_csv)
+    df = reader.read()
+    assert not df.empty
+    assert "Horodate" in df.columns
+    assert "Valeur" in df.columns
     
-    # Lecture et traitement
-    input_file = os.path.join(test_data_dir, 'integration_data.csv')
-    df = cleaner.read_csv_file(input_file)
-    df_completed = cleaner.complete_missing_data(df)
+    # Conversion en kW
+    df = reader.convert_to_kw(df)
+    assert df.iloc[0]["Valeur"] == 0.5  # 500W = 0.5kW
     
-    # Supprime les lignes invalides
-    df_completed = df_completed[df_completed['Consommation (Wh)'].apply(
-        lambda x: str(x).replace('.', '').isdigit() if pd.notna(x) else False
-    )]
+    # 2. Nettoyage des données
+    cleaner = DataCleaner(df)
     
-    # Génération des fichiers
-    output_dir = str(tmp_path)
-    cleaner.generate_output_files(df_completed, output_dir)
+    # Vérifie la détection des données manquantes pour 2023
+    missing_2023 = cleaner.detect_missing_hours('2023')
+    assert len(missing_2023) == 1  # Il manque 2h dans les données 2023
     
-    # Vérification de la cohérence
-    total_rows = 0
-    for year in [2023, 2024]:
-        output_file = os.path.join(output_dir, f'{year}.csv')
-        df_output = pd.read_csv(output_file, sep=';', parse_dates=['Horodate'])
-        
-        # Vérifie que les données valides d'origine sont préservées
-        df_year = df[df['Horodate'].dt.year == year]
-        valid_data = df_year[df_year['Consommation (Wh)'].notna() & 
-                            df_year['Consommation (Wh)'].astype(str).str.replace('.', '').str.isdigit()]
-        
-        for _, row in valid_data.iterrows():
-            matching_rows = df_output[
-                (df_output['Horodate'] == row['Horodate']) & 
-                (df_output['Consommation (Wh)'].astype(float) == float(row['Consommation (Wh)']))
-            ]
-            assert len(matching_rows) > 0, f"Donnée manquante pour {row['Horodate']}"
-        
-        total_rows += len(df_output)
+    # Remplit les données manquantes
+    filled_df = cleaner.fill_missing_data('2023')
+    assert len(filled_df[filled_df['Horodate'].dt.year == 2023]) == 4
     
-    # Vérifie que nous avons des données pour chaque année
-    assert total_rows > 0, "Aucune donnée générée"
+    # 3. Export vers Excel
+    output_2023 = tmp_path / "2023.xlsx"
+    output_2024 = tmp_path / "2024.xlsx"
+    
+    # Export 2023
+    data_2023 = filled_df[filled_df['Horodate'].dt.year == 2023]
+    exporter_2023 = ExcelExporter(data_2023)
+    exporter_2023.export_to_excel(str(output_2023))
+    
+    # Export 2024
+    data_2024 = filled_df[filled_df['Horodate'].dt.year == 2024]
+    exporter_2024 = ExcelExporter(data_2024)
+    exporter_2024.export_to_excel(str(output_2024))
+    
+    # Vérifie que les fichiers existent
+    assert output_2023.exists()
+    assert output_2024.exists()
+    
+    # Valide le format des fichiers
+    assert len(exporter_2023.validate_export_format(str(output_2023))) == 0
+    assert len(exporter_2024.validate_export_format(str(output_2024))) == 0
+    
+    # Vérifie le contenu des fichiers Excel
+    df_2023 = pd.read_excel(output_2023, engine='openpyxl')
+    df_2024 = pd.read_excel(output_2024, engine='openpyxl')
+    
+    assert 'Time Interval' in df_2023.iloc[0].values
+    assert 'kW' in df_2023.iloc[1].values
+    assert 'Time Interval' in df_2024.iloc[0].values
+    assert 'kW' in df_2024.iloc[1].values

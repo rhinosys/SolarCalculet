@@ -1,49 +1,83 @@
-# Journal de développement - Nettoyage des données ENEDIS
+# Journal de Développement - SolarCalculet
 
-## Objectif
-Créer un outil de nettoyage pour le fichier de données ENEDIS avec complétion des données manquantes à partir des années 2023/2024/2025.
+## Contexte du Projet
+Développement d'un outil de nettoyage et traitement des données de consommation ENEDIS avec les caractéristiques suivantes :
+- Traitement du fichier ENEDIS.input.csv
+- Validation et complétion des données manquantes
+- Génération de fichiers Excel formatés pour 2023 et 2024
 
-## Étapes du projet
+## Stack Technique
+- Python 3.x
+- pandas >= 2.0.0 : Manipulation des données
+- openpyxl >= 3.1.0 : Génération des fichiers Excel
+- pytest >= 7.4.0 : Tests unitaires et d'intégration
+- pymongo >= 4.6.0 : Stockage intermédiaire des données
 
-### 1. Configuration initiale
-- [x] Mise en place de l'environnement de développement Python
-- [x] Configuration des outils de test (pytest)
+## Plan de Développement (TDD)
+
+### 1. Configuration Initiale ✅
+- [x] Mise en place de l'environnement Python
+- [x] Configuration de pytest
 - [x] Création de la structure du projet
-- [x] Configuration de MongoDB
+- [x] Validation des dépendances
 
-### 2. Lecture et validation des données (TDD)
-- [x] Tests et implémentation de la lecture du fichier CSV
-- [x] Tests et implémentation de la validation du format des données
-- [x] Tests et implémentation de la détection des données manquantes
+### 2. Lecture et Validation des Données ✅
+- [x] Tests de lecture du fichier CSV
+- [x] Tests de validation des colonnes (Horodate et Valeur)
+- [x] Tests de validation du format des données
 
-### 3. Traitement des données manquantes (TDD)
-- [x] Tests et implémentation de la recherche des données de substitution
-- [x] Tests et implémentation de la logique de remplacement (2023/2024/2025)
-- [x] Tests et implémentation de la validation des données complétées
+### 3. Traitement des Données Manquantes ✅
+- [x] Tests de détection des données manquantes
+- [x] Tests de recherche des données de substitution
+- [x] Tests de validation des données complétées
 
-### 4. Stockage et organisation des données (TDD)
-- [x] Tests et implémentation de l'interaction avec MongoDB
-- [x] Tests et implémentation de la structuration des données par année
-- [x] Tests et implémentation de la génération des fichiers de sortie
+### 4. Génération des Fichiers de Sortie ✅
+- [x] Tests de séparation des données par année
+- [x] Tests de formatage Excel
+- [x] Tests de génération des fichiers 2023.xlsx et 2024.xlsx
 
-### 5. Export et vérification finale (TDD)
-- [x] Tests et implémentation de l'export vers 2023.csv
-- [x] Tests et implémentation de l'export vers 2024.csv
-- [x] Tests d'intégration de bout en bout
+### 5. Tests d'Intégration et Finalisation ✅
+- [x] Tests d'intégration bout en bout
+- [x] Validation finale du format
+- [x] Documentation
 
-## Technologies utilisées
-- Python
-- pytest pour les tests
-- pandas pour la manipulation des données
-- MongoDB pour le stockage intermédiaire
+## Journal des Modifications
 
-## Journal des modifications
-*Les modifications seront ajoutées ici au fur et à mesure de l'avancement du projet*
+### 24/03/2025 - Initialisation du Projet
+- Création du DEVBOOK.md
+- Configuration initiale du projet
+- Définition de la structure TDD
 
-Date | Description
------|-------------
-2025-03-24 | Configuration initiale : Création de la structure du projet, mise en place de l'environnement virtuel, configuration de pytest et MongoDB
-2025-03-24 | Lecture et validation : Implémentation des fonctions de lecture CSV, validation des données et détection des données manquantes
-2025-03-24 | Traitement des données : Implémentation de la recherche et du remplacement des données manquantes avec validation
-2025-03-24 | Stockage et organisation : Installation de MongoDB, implémentation du stockage et de la génération des fichiers par année
-2025-03-24 | Export et vérification : Implémentation des tests d'intégration et vérification du processus complet
+### 24/03/2025 - Étape 1 : Configuration Initiale ✅
+- Création de la structure du projet (src/solarcalculet, tests)
+- Configuration de pytest (pytest.ini)
+- Création des tests de configuration
+- Validation réussie des dépendances
+
+### 24/03/2025 - Étape 2 : Lecture et Validation des Données ✅
+- Création du module DataReader
+- Implémentation de la lecture du fichier CSV
+- Validation des colonnes requises (Horodate, Valeur)
+- Conversion des valeurs de W en kW
+- Tests unitaires réussis
+
+### 24/03/2025 - Étape 3 : Traitement des Données Manquantes ✅
+- Création du module DataCleaner
+- Détection intelligente des heures manquantes
+- Recherche des données de substitution dans les autres années
+- Remplissage automatique avec traçabilité (colonne Source)
+- Tests unitaires réussis
+
+### 24/03/2025 - Étape 4 : Génération des Fichiers de Sortie ✅
+- Création du module ExcelExporter
+- Implémentation du formatage des dates et heures
+- Génération des fichiers Excel selon le template
+- Validation du format d'export
+- Tests unitaires réussis
+
+### 24/03/2025 - Étape 5 : Tests d'Intégration et Finalisation ✅
+- Création des tests d'intégration
+- Implémentation du script principal
+- Correction des bugs détectés
+- Documentation complète du projet
+- Tests d'intégration réussis
