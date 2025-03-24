@@ -81,6 +81,7 @@ jobs:
 
     - name: Validate file source
       run: |
+        env
         if [[ "$SOURCE_TYPE" == "http" && ! "$FILE_SOURCE" =~ ^https?:// ]]; then
           echo "::error::L'URL doit commencer par http:// ou https://"
           exit 1
