@@ -163,12 +163,34 @@ jobs:
         if-no-files-found: error
 
     - name: Generate validation report
-      if: env.VALIDATE_ONLY == 'true'
+      if: always()
       run: |
         echo "## Rapport de validation" > validation_report.md
         echo "" >> validation_report.md
-        echo "✅ Le fichier CSV est valide et prêt à être traité" >> validation_report.md
-        echo "" >> validation_report.md
+        if [[ -f csv_info.txt ]]; then
+          echo "✅ Le fichier CSV est valide et prêt à être traité" >> validation_report.md
+          echo "" >> validation_report.md
+          echo "### Structure détectée" >> validation_report.md
+          while IFS='=' read -r key value; do
+            case "$key" in
+              "ROWS") echo "- Nombre de lignes : $value" >> validation_report.md ;;
+              "COLS") echo "- Colonnes : [$value]" >> validation_report.md ;;
+              "START") START="$value" ;;
+              "END") echo "- Période : $START à $value" >> validation_report.md ;;
+            esac
+          done < csv_info.txt
+        else
+          echo "❌ Erreur lors de la validation du fichier" >> validation_report.md
+          echo "" >> validation_report.md
+          echo "### Détails de l'erreur" >> validation_report.md
+          if [[ ! -f "$GITHUB_WORKSPACE/$FILE_SOURCE" ]]; then
+            echo "- Le fichier source n'existe pas : $FILE_SOURCE" >> validation_report.md
+          fi
+          if [[ ! -d "$GITHUB_WORKSPACE/Data" ]]; then
+            echo "- Le dossier Data n'existe pas dans le dépôt" >> validation_report.md
+          fi
+          echo "- Commande : python -m solarcalculet data/input.csv" >> validation_report.md
+        fi
         echo "### Structure détectée" >> validation_report.md
         python -c "
         import pandas as pd

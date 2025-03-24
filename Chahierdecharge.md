@@ -1,10 +1,31 @@
-On doit faire un outil de nettoyage du fichier ./Data/ENEDIS.input.csv. Ce fichier est extraction du distrubuteur energetique de ma maison.  Les donnée sont presenter avec chaque ligne une heure de consomation. les donnée commence en 2023 et finisse en 2024. Mon objectif est verifier chaque jour de 2023 et 2024 si les donnée sont complete. Si il manque des donnée sur une heure on prend un les donnée de l'heure de l'année 2024 ou 2023 ou meêm 2025. Il faut que trouve la meilleur facon de traiter. le resultat finale est d'avoir un fichier 2023.csv et fichier 2024.csv. Avec deux colone 
+# Cahier des Charges - Outil de Traitement des Données ENEDIS
 
-Ayttention le fichier ENEDIS.input.csv contient x colone. Il nous faut la colone Horodate et la colone Valeur.
+## Objectif
+Créer un outil de nettoyage pour le fichier `./Data/ENEDIS.input.csv`. Ce fichier est une extraction des données de consommation électrique provenant du distributeur énergétique de ma maison.
 
-Les test et le programme dois prendre en compte que le fichier peut avoir plusier colones. Mais, il nous faut Horadate et la colone Valeur.
+## Description des Données
+- Le fichier contient les données de consommation horaire
+- Période couverte : de 2023 à 2024
+- Format : une ligne par heure de consommation
 
-Il faut généer un fichier xlsx. pour cahque année avec ce format.
+## Traitement Requis
+1. Vérifier la complétude des données pour chaque jour de 2023 et 2024
+2. En cas de données manquantes pour une heure :
+   - Utiliser les données de la même heure de l'année 2024, 2023 ou 2025
+   - Choisir la meilleure méthode de substitution
+
+## Format d'Entrée
+- Fichier : `ENEDIS.input.csv`
+- Colonnes requises :
+  - `Horodate` : date et heure de la mesure
+  - `Valeur` : valeur de consommation
+- Note : Le fichier peut contenir d'autres colonnes, mais seules `Horodate` et `Valeur` sont nécessaires
+
+## Format de Sortie
+1. Générer deux fichiers :
+   - `2023.xlsx`
+   - `2024.xlsx`
+2. Format XLSX avec le modèle suivant :
 
 '
 "Note:
