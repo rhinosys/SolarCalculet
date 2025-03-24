@@ -2,6 +2,7 @@
 
 [![Tests](https://github.com/rhinosys/SolarCalculet/actions/workflows/tests.yml/badge.svg)](https://github.com/rhinosys/SolarCalculet/actions/workflows/tests.yml)
 [![Documentation](https://github.com/rhinosys/SolarCalculet/actions/workflows/docs.yml/badge.svg)](https://github.com/rhinosys/SolarCalculet/actions/workflows/docs.yml)
+[![Process Data](https://github.com/rhinosys/SolarCalculet/actions/workflows/process_data.yml/badge.svg)](https://github.com/rhinosys/SolarCalculet/actions/workflows/process_data.yml)
 [![Code Quality](https://img.shields.io/badge/pylint-9.43%2F10-green)](https://github.com/rhinosys/SolarCalculet/actions)
 
 Outil de traitement des données de consommation ENEDIS pour l'analyse énergétique et le dimensionnement solaire.
@@ -33,12 +34,38 @@ pip install -r requirements.txt
 
 ## 🚀 Utilisation
 
+### En local
+
 1. Préparez votre fichier de données ENEDIS au format CSV
 2. Exécutez l'outil :
 ```bash
 python -m solarcalculet votre_fichier.csv
 ```
 3. Récupérez les fichiers Excel générés pour 2023 et 2024
+
+### Via GitHub Actions
+
+Vous pouvez traiter vos données directement via GitHub Actions :
+
+1. Allez dans l'onglet "Actions" du dépôt
+2. Sélectionnez le workflow "Process ENEDIS Data"
+3. Cliquez sur "Run workflow" et configurez :
+   - Source du fichier (HTTP ou dépôt)
+   - Chemin ou URL du fichier (par défaut : `Data/Enedis_input.csv`)
+   - Préfixe pour les fichiers de sortie (optionnel)
+   - Mode validation uniquement (optionnel)
+
+#### Options du workflow
+
+- **Source type** : `http` ou `repo`
+- **File source** : URL ou chemin du fichier
+- **Output prefix** : Préfixe pour les fichiers générés (optionnel)
+- **Validate only** : Génère uniquement un rapport de validation
+
+#### Artifacts générés
+
+- Mode normal : Fichiers XLSX traités
+- Mode validation : Rapport détaillé (structure, nombre de lignes, période)
 
 ## 🧪 Tests et Qualité du Code
 
