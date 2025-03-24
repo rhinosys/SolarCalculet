@@ -1,9 +1,6 @@
 name: process-enedis-data
 
 on:
-  push:
-    paths:
-      - '.github/workflows/process_data.yml'
   workflow_dispatch:
     inputs:
       file_source:
