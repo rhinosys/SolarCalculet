@@ -15,6 +15,16 @@ on:
           - http
           - repo
         default: 'repo'
+      output_prefix:
+        description: 'Préfixe pour les fichiers de sortie (optionnel)'
+        required: false
+        type: string
+        default: ''
+      validate_only:
+        description: 'Uniquement valider le fichier sans générer les XLSX'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   process:
@@ -27,17 +37,33 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Validate file source
+      run: |
+        if [[ "${{ inputs.source_type }}" == "http" && ! "${{ inputs.file_source }}" =~ ^https?:// ]]; then
+          echo "::error::L'URL doit commencer par http:// ou https://"
+          exit 1
+        fi
+        if [[ "${{ inputs.source_type }}" == "repo" && ! -f "${{ inputs.file_source }}" ]]; then
+          echo "::error::Le fichier n'existe pas dans le dépôt"
+          exit 1
+        fi
+
     - name: Download file if HTTP
       if: inputs.source_type == 'http'
       run: |
         mkdir -p data
         curl -L "${{ github.event.inputs.file_source }}" -o data/input.csv
+        if ! file data/input.csv | grep -q "CSV text"; then
+          echo "::error::Le fichier téléchargé n'est pas un CSV valide"
+          exit 1
+        fi
 
     - name: Copy file if from repo
       if: inputs.source_type == 'repo'
@@ -45,15 +71,55 @@ jobs:
         mkdir -p data
         cp "${{ github.event.inputs.file_source }}" data/input.csv
 
-    - name: Process data
+    - name: Validate CSV format
       run: |
-        python -m solarcalculet data/input.csv
+        python -c "
+import pandas as pd
+try:
+    df = pd.read_csv('data/input.csv', sep=';')
+    required_cols = ['Horodate', 'Valeur']
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f'Colonnes manquantes: {missing_cols}')
+    print('✅ Format CSV valide')
+except Exception as e:
+    print(f'::error::Erreur de validation: {e}')
+    exit(1)
+        "
+
+    - name: Process data
+      if: inputs.validate_only != 'true'
+      run: |
+        python -m solarcalculet data/input.csv ${{ inputs.output_prefix != '' && format('--output-prefix {0}', inputs.output_prefix) || '' }}
 
     - name: Upload XLSX files
+      if: inputs.validate_only != 'true'
       uses: actions/upload-artifact@v4
       with:
         name: processed-data
         path: |
-          2023.xlsx
-          2024.xlsx
+          ${{ inputs.output_prefix }}*.xlsx
         if-no-files-found: error
+
+    - name: Generate validation report
+      if: inputs.validate_only == 'true'
+      run: |
+        echo "## Rapport de validation" > validation_report.md
+        echo "" >> validation_report.md
+        echo "✅ Le fichier CSV est valide et prêt à être traité" >> validation_report.md
+        echo "" >> validation_report.md
+        echo "### Structure détectée" >> validation_report.md
+        python -c "
+import pandas as pd
+df = pd.read_csv('data/input.csv', sep=';')
+print(f'- Nombre de lignes : {len(df)}', file=open('validation_report.md', 'a'))
+print(f'- Colonnes : {list(df.columns)}', file=open('validation_report.md', 'a'))
+print(f'- Période : {df['Horodate'].min()} à {df['Horodate'].max()}', file=open('validation_report.md', 'a'))
+        "
+
+    - name: Upload validation report
+      if: inputs.validate_only == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: validation-report
+        path: validation_report.md
