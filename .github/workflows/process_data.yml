@@ -81,13 +81,12 @@ jobs:
 
     - name: Validate file source
       run: |
-        env
         if [[ "$SOURCE_TYPE" == "http" && ! "$FILE_SOURCE" =~ ^https?:// ]]; then
           echo "::error::L'URL doit commencer par http:// ou https://"
           exit 1
         fi
-        if [[ "$SOURCE_TYPE" == "repo" && ! -f "$FILE_SOURCE" ]]; then
-          echo "::error::Le fichier n'existe pas dans le dépôt"
+        if [[ "$SOURCE_TYPE" == "repo" && ! -f "$GITHUB_WORKSPACE/$FILE_SOURCE" ]]; then
+          echo "::error::Le fichier n'existe pas dans le dépôt: $GITHUB_WORKSPACE/$FILE_SOURCE"
           exit 1
         fi
 
@@ -105,7 +104,7 @@ jobs:
       if: env.SOURCE_TYPE == 'repo'
       run: |
         mkdir -p data
-        cp "$FILE_SOURCE" data/input.csv
+        cp "$GITHUB_WORKSPACE/$FILE_SOURCE" data/input.csv
 
     - name: Validate CSV format
       id: validate-csv
