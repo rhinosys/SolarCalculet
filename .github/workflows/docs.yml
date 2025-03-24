@@ -7,6 +7,10 @@ on:
       - 'docs/**'
       - '.github/workflows/docs.yml'
 
+# Autoriser l'écriture sur le dépôt
+permissions:
+  contents: write
+
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -37,3 +41,5 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/_site
+        commit_message: 'docs: update documentation site'
+        enable_jekyll: true
