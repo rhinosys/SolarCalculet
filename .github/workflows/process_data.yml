@@ -148,6 +148,22 @@ jobs:
           ${{ env.OUTPUT_PREFIX }}*.xlsx
         if-no-files-found: error
 
+    - name: Generate validation report
+      if: env.VALIDATE_ONLY == 'true'
+      run: |
+        echo "## Rapport de validation" > validation_report.md
+        echo "" >> validation_report.md
+        echo "✅ Le fichier CSV est valide et prêt à être traité" >> validation_report.md
+        echo "" >> validation_report.md
+        echo "### Structure détectée" >> validation_report.md
+        python -c "
+        import pandas as pd
+        df = pd.read_csv('data/input.csv', sep=';')
+        print(f'- Nombre de lignes : {len(df)}', file=open('validation_report.md', 'a'))
+        print(f'- Colonnes : {list(df.columns)}', file=open('validation_report.md', 'a'))
+        print(f'- Période : {df[\"Horodate\"].min()} à {df[\"Horodate\"].max()}', file=open('validation_report.md', 'a'))
+        "
+
     - name: Upload validation report
       if: always()
       uses: actions/upload-artifact@v4
