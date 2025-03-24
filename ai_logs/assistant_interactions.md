@@ -1,2 +1,0 @@
-# Journal des Interactions Assistant
-
