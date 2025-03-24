@@ -11,7 +11,7 @@ on:
         description: 'Source du fichier CSV (URL HTTP ou chemin dans le dépôt)'
         required: true
         type: string
-        default: 'Data/Enedis_input.csv'
+        default: 'Data/ENEDIS.input.csv'
       source_type:
         description: 'Type de source (http ou repo)'
         required: true
