@@ -33,7 +33,7 @@ jobs:
     
     - name: Lint with pylint
       run: |
-        pylint src/solarcalculet tests
+        pylint --fail-under=8 src/solarcalculet tests
     
     - name: Run tests with pytest and coverage
       run: |
